@@ -309,7 +309,7 @@ async function handleStatusUpdate(status: {
 
   // Guard transitions — forward-only on the success ladder, and
   // `failed` only from pre-delivered states.
-  if (!isValidStatusTransition(recipient.status, status.status)) return;
+  if (!isValidStatusTransition(recipient.status as string, status.status)) return;
 
   const update: Record<string, unknown> = { status: status.status };
   if (status.status === 'sent' && !('sent_at' in update))

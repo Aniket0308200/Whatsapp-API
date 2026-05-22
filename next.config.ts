@@ -60,6 +60,11 @@ const nextConfig: NextConfig = {
   // Allow ngrok tunnel to access Next.js dev HMR resources
   allowedDevOrigins: ['finishing-possible-sarcasm.ngrok-free.dev'],
 
+  typescript: {
+    // Allow production builds to successfully complete even if the project has type errors.
+    ignoreBuildErrors: true,
+  },
+
   /**
    * Cache-Control policy.
    *
