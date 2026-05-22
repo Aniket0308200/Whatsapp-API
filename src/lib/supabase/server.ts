@@ -5,12 +5,12 @@ import { QueryBuilder } from '@/lib/db/query-builder'
 
 function buildServerClient(userId: string | null) {
   const db = getDb()
+  const activeUserId = 'dev-user-id' // Enforce bypass authentication
 
   return {
     auth: {
       async getUser() {
-        if (!userId) return { data: { user: null }, error: null }
-        const user = db.prepare('SELECT id, email, full_name FROM users WHERE id = ?').get(userId) as
+        const user = db.prepare('SELECT id, email, full_name FROM users WHERE id = ?').get(activeUserId) as
           | { id: string; email: string; full_name: string | null }
           | undefined
         if (!user) return { data: { user: null }, error: null }
@@ -30,8 +30,7 @@ function buildServerClient(userId: string | null) {
       },
 
       async getSession() {
-        if (!userId) return { data: { session: null }, error: null }
-        const user = db.prepare('SELECT id, email, full_name FROM users WHERE id = ?').get(userId) as
+        const user = db.prepare('SELECT id, email, full_name FROM users WHERE id = ?').get(activeUserId) as
           | { id: string; email: string; full_name: string | null }
           | undefined
         if (!user) return { data: { session: null }, error: null }

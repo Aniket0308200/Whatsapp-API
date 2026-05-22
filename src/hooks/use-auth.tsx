@@ -37,9 +37,20 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<LocalUser | null>(null);
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<LocalUser | null>({
+    id: "dev-user-id",
+    email: "developer@wacrm.local",
+    user_metadata: { full_name: "Developer Mode" },
+  });
+  const [profile, setProfile] = useState<Profile | null>({
+    id: "dev-profile-id",
+    user_id: "dev-user-id",
+    full_name: "Developer Mode",
+    email: "developer@wacrm.local",
+    avatar_url: null,
+    role: "admin",
+  });
+  const [loading, setLoading] = useState(false);
 
   const fetchMe = useCallback(async () => {
     try {

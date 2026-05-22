@@ -2,7 +2,7 @@ import Database from 'better-sqlite3'
 import path from 'path'
 import fs from 'fs'
 
-const DATA_DIR = path.join(process.cwd(), 'data')
+const DATA_DIR = process.env.VERCEL ? '/tmp/wacrm-data' : path.join(process.cwd(), 'data')
 const DB_PATH = path.join(DATA_DIR, 'wacrm.db')
 
 let _db: Database.Database | null = null
@@ -17,6 +17,7 @@ export function getDb(): Database.Database {
   _db.pragma('foreign_keys = ON')
   initSchema(_db)
   runMigrations(_db)
+  seedDeveloperUser(_db)
   return _db
 }
 
@@ -391,3 +392,27 @@ export function deserializeRow(row: Record<string, unknown> | null): Record<stri
 export function deserializeRows(rows: Record<string, unknown>[]): Record<string, unknown>[] {
   return rows.map(r => deserializeRow(r) as Record<string, unknown>)
 }
+
+function seedDeveloperUser(db: Database.Database): void {
+  try {
+    db.prepare(`
+      INSERT INTO users (id, email, password_hash, full_name)
+      VALUES (?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET
+        email = excluded.email,
+        full_name = excluded.full_name
+    `).run('dev-user-id', 'developer@wacrm.local', 'mock-password-hash', 'Developer Mode')
+
+    db.prepare(`
+      INSERT INTO profiles (id, user_id, full_name, email, role)
+      VALUES (?, ?, ?, ?, ?)
+      ON CONFLICT(user_id) DO UPDATE SET
+        full_name = excluded.full_name,
+        email = excluded.email,
+        role = excluded.role
+    `).run('dev-profile-id', 'dev-user-id', 'Developer Mode', 'developer@wacrm.local', 'admin')
+  } catch (err) {
+    console.error('Failed to seed developer user:', err)
+  }
+}
+

@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useMemo, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 
 import {
@@ -11,7 +11,7 @@ import {
 import { AUTOMATION_TEMPLATES, type TemplateSlug } from "@/lib/automations/templates"
 import type { AutomationStepType, AutomationTriggerType } from "@/types"
 
-export default function NewAutomationPage() {
+function NewAutomationContent() {
   const params = useSearchParams()
   const template = params.get("template") as TemplateSlug | null
 
@@ -47,6 +47,18 @@ export default function NewAutomationPage() {
   }, [template])
 
   return <AutomationBuilder initial={initial} />
+}
+
+export default function NewAutomationPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-64 items-center justify-center bg-slate-950">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+      </div>
+    }>
+      <NewAutomationContent />
+    </Suspense>
+  )
 }
 
 interface SeedRow {
