@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { Conversation, Message, Contact, ConversationStatus } from "@/types";
@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { WifiOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export default function InboxPage() {
+function InboxContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   /**
@@ -344,4 +344,19 @@ export default function InboxPage() {
       </div>
     </div>
   );
+}
+
+export default function InboxPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-screen items-center justify-center bg-slate-950">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+          <p className="text-sm text-slate-400">Loading inbox...</p>
+        </div>
+      </div>
+    }>
+      <InboxContent />
+    </Suspense>
+  )
 }

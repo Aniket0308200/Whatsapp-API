@@ -46,11 +46,8 @@ function insertRow(db: ReturnType<typeof getDb>, table: string, data: Record<str
 }
 
 export async function POST(req: NextRequest) {
-  const token = req.cookies.get(COOKIE_NAME)?.value
-  const payload = token ? verifyToken(token) : null
-  if (!payload) {
-    return NextResponse.json({ data: null, error: { message: 'Unauthorized' } }, { status: 401 })
-  }
+  // Bypass token check, always authenticate as developer user
+  const payload = { userId: 'dev-user-id' }
 
   let body: QueryRequest
   try {

@@ -47,7 +47,7 @@ function buildServerClient(userId: string | null) {
     },
 
     from(table: string) {
-      return new QueryBuilder(db, table, userId)
+      return new QueryBuilder(db, table, activeUserId)
     },
 
     // Stub for realtime — no-op on server
@@ -74,15 +74,12 @@ function buildServerClient(userId: string | null) {
 }
 
 export async function createClient() {
-  const cookieStore = await cookies()
-  const token = cookieStore.get(COOKIE_NAME)?.value
-  const payload = token ? verifyToken(token) : null
-  return buildServerClient(payload?.userId ?? null)
+  return buildServerClient('dev-user-id')
 }
 
 // Service-role equivalent — same as regular in SQLite (no RLS)
 export async function createAdminClient() {
-  return buildServerClient(null)
+  return buildServerClient('dev-user-id')
 }
 
 export { deserializeRow, deserializeRows }

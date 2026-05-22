@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Settings, MessageSquare, Tag, User } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -17,7 +18,7 @@ function isTabValue(v: string | null): v is TabValue {
   return !!v && (TAB_VALUES as readonly string[]).includes(v);
 }
 
-export default function SettingsPage() {
+function SettingsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -96,4 +97,16 @@ export default function SettingsPage() {
       </Tabs>
     </div>
   );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-64 items-center justify-center bg-slate-950">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
+      </div>
+    }>
+      <SettingsContent />
+    </Suspense>
+  )
 }
